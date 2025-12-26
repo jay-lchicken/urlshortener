@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Plus } from "lucide-react"
-import { useState } from "react"
+import {useEffect, useState} from "react"
 import { toast } from "sonner"
 import {
   Select,
@@ -22,16 +22,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {useRouter, useSearchParams} from "next/navigation";
 
 export function CreateNewLinkButton() {
   const origin = typeof window !== "undefined" ? window.location.origin : ""
   const [baseUrl, setBaseUrl] = useState(origin)
-  const [open, setOpen] = useState(false)
+  const router = useRouter()
+    const searchParams = useSearchParams()
+
+  const [open, setOpen] = useState(searchParams.get("log") === "true")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  useEffect(() => {
+  if (searchParams.get("new") === "true") {
+    setOpen(true)
+    const newParams = new URLSearchParams(searchParams)
+    newParams.delete("new")
+    router.replace(`${window.location.pathname}?${newParams.toString()}`, { scroll: false })
+  }
+}, [searchParams, router])
+  useEffect(() => {
+    if (searchParams.get("new") === "true") {
+      setOpen(true)
+    }
+  }, [searchParams]);
+
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsSubmitting(true)
+
 
     try {
       const formData = new FormData(e.currentTarget)

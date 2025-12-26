@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs/server"
 import pool from "@/lib/db"
-
+function isAlphanumeric(str: string): boolean {
+  return /^[a-z0-9]+$/i.test(str);
+}
 type RouteContext = {
   params: { linkId: string }
 }
@@ -30,6 +32,19 @@ export async function PUT(req: Request, context: RouteContext) {
   if (!link || !tag || !baseURL) {
     return NextResponse.json(
       { error: "Link and tag are required" },
+      { status: 400 }
+    )
+  }
+  const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/"]
+  if (!isAlphanumeric(tag)){
+    return NextResponse.json(
+      { error: "Tag must be alphanumeric." },
+      { status: 400 }
+    )
+  }
+  if (reservedTags.includes(tag)) {
+    return NextResponse.json(
+      { error: "Tag is reserved. Please choose a different tag." },
       { status: 400 }
     )
   }
