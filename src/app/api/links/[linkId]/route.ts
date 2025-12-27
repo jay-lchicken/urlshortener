@@ -35,7 +35,7 @@ export async function PUT(req: Request, context: RouteContext) {
       { status: 400 }
     )
   }
-  const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/"]
+  const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/", "domains"]
   if (!isAlphanumeric(tag)){
     return NextResponse.json(
       { error: "Tag must be alphanumeric." },

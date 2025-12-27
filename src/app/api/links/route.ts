@@ -34,7 +34,7 @@ export async function POST(req: Request) {
   if (!/^https?:\/\//i.test(link)) {
     return NextResponse.json({ error: "Invalid link URL" }, { status: 400 })
   }
-  const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/"]
+  const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/", "domains"]
   if (!isAlphanumeric(tag)){
     return NextResponse.json(
       { error: "Tag must be alphanumeric." },
