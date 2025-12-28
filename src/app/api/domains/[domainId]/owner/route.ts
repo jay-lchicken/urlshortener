@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs/server"
 import pool from "@/lib/db"
 
 type RouteContext = {
-  params: { domainId: string }
+  params: Promise<{ domainId: string }>
 }
 
-export async function PATCH(req: Request, context: RouteContext) {
+export async function PATCH(req: NextRequest, context: RouteContext) {
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs/server"
 import { promises as dns, setServers } from "dns"
 import pool from "@/lib/db"
 
 type RouteContext = {
-  params: { domainId: string }
+  params: Promise<{ domainId: string }>
 }
 
 function normalizeDnsValue(value: string): string {
@@ -13,7 +13,7 @@ function normalizeDnsValue(value: string): string {
 
 setServers(["8.8.8.8", "1.1.1.1"])
 
-export async function POST(_req: Request, context: RouteContext) {
+export async function POST(_req: NextRequest, context: RouteContext) {
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

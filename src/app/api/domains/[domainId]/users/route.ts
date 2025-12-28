@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs/server"
 import pool from "@/lib/db"
 import { clerkClient } from '@clerk/nextjs/server'
 
 type RouteContext = {
-  params: { domainId: string }
+  params: Promise<{ domainId: string }>
 }
 
-export async function POST(req: Request, context: RouteContext) {
+export async function POST(req: NextRequest, context: RouteContext) {
   const user = await currentUser()
   const client = await clerkClient()
 
@@ -105,7 +105,7 @@ export async function POST(req: Request, context: RouteContext) {
   return NextResponse.json({ added: true }, { status: 201 })
 }
 
-export async function DELETE(req: Request, context: RouteContext) {
+export async function DELETE(req: NextRequest, context: RouteContext) {
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

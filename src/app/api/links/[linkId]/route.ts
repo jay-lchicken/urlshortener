@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { currentUser } from "@clerk/nextjs/server"
 import pool from "@/lib/db"
 function isAlphanumeric(str: string): boolean {
   return /^[a-z0-9]+$/i.test(str);
 }
 type RouteContext = {
-  params: { linkId: string }
+  params: Promise<{ linkId: string }>
 }
-export async function PUT(req: Request, context: RouteContext) {
+export async function PUT(req: NextRequest, context: RouteContext) {
   const user = await currentUser()
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
