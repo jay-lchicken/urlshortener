@@ -2,7 +2,7 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
-const authorisedURL = ["localhost", process.env.BASE_URL]; // example
+const authorisedURL = ["localhost", process.env.BASE_URL];
 const PROTECTED_PATHS = ["/admin", "/login", "/signup", "/api", "/links", "/dashboard", "/settings", "/account", "/help", "/documentation", "/robots.txt", "/", "/domains"];     // example
 
 export default clerkMiddleware((auth, req) => {
@@ -14,6 +14,7 @@ export default clerkMiddleware((auth, req) => {
   if (!isValidHost && isProtectedPath) {
     return NextResponse.rewrite(new URL('/404', req.url));
   }
+
 
 
   return NextResponse.next();
