@@ -33,19 +33,6 @@ export async function POST(req: NextRequest, context: RouteContext) {
       { status: 400 }
     )
   }
-  const users = await client.users.getUserList({
-    emailAddress: [body.email]
-  })
-  const userId = users.data.length > 0 ? users.data[0].id : null
-    if (!userId) {
-        return NextResponse.json(
-        { error: "User with that email address not found" },
-        { status: 404 }
-        )
-    }
-
-
-
   let ownerId: string
   try {
     const domainResult = await pool.query(
@@ -69,6 +56,20 @@ export async function POST(req: NextRequest, context: RouteContext) {
   if (!isAdmin) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
+  const users = await client.users.getUserList({
+    emailAddress: [body.email]
+  })
+  const userId = users.data.length > 0 ? users.data[0].id : null
+    if (!userId) {
+        return NextResponse.json(
+        { error: "User with that email address not found" },
+        { status: 404 }
+        )
+    }
+
+
+
+
 
   try {
     const existing = await pool.query(
@@ -105,6 +106,13 @@ export async function POST(req: NextRequest, context: RouteContext) {
   return NextResponse.json({ added: true }, { status: 201 })
 }
 
+
+
+
+
+
+
+
 export async function DELETE(req: NextRequest, context: RouteContext) {
   const user = await currentUser()
   if (!user) {
@@ -133,15 +141,17 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
   }
 
   let ownerId: string
+  let host: string
   try {
     const domainResult = await pool.query(
-      `select owner_id from domains where id = $1 limit 1`,
+      `select owner_id,host from domains where id = $1 limit 1`,
       [domainIdNumber]
     )
     if (!domainResult.rows.length) {
       return NextResponse.json({ error: "Domain not found" }, { status: 404 })
     }
     ownerId = domainResult.rows[0].owner_id as string
+    host = domainResult.rows[0].host as string
   } catch (error) {
     console.error("Failed to load domain", error)
     return NextResponse.json(
@@ -166,6 +176,7 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
       `delete from domain_user where domain_id::text = $1 and user_id = $2`,
       [domainIdText, targetUserId]
     )
+    const result2 = await pool.query(`delete from links where base_url = $1 and user_id = $2`, [host, targetUserId])
     if ((result.rowCount ?? 0) === 0) {
       return NextResponse.json(
         { error: "User not found for this domain." },
