@@ -11,22 +11,7 @@ function normalizeDnsValue(value: string): string {
   return value.trim().toLowerCase().replace(/\.$/, "")
 }
 
-async function resolveHostIps(hostname: string): Promise<Set<string>> {
-  const ips = new Set<string>()
-  try {
-    const v4 = await dns.resolve4(hostname)
-    v4.forEach((ip) => ips.add(ip))
-  } catch {
-    // Ignore missing A records.
-  }
-  try {
-    const v6 = await dns.resolve6(hostname)
-    v6.forEach((ip) => ips.add(ip))
-  } catch {
-    // Ignore missing AAAA records.
-  }
-  return ips
-}
+
 
 setServers(["8.8.8.8", "1.1.1.1"])
 
@@ -101,23 +86,7 @@ export async function POST(_req: NextRequest, context: RouteContext) {
     console.error("CNAME lookup failed", error)
   }
 
-  if (!cnameOk) {
-    const cnameErr = cnameError as { code?: string } | null
-    if (!cnameError || cnameErr?.code === "ENODATA") {
-      try {
-        const [hostIps, targetIps] = await Promise.all([
-          resolveHostIps(host),
-          resolveHostIps(cnameTarget),
-        ])
-        if (hostIps.size > 0 && targetIps.size > 0) {
-          const hasMatch = [...hostIps].some((ip) => targetIps.has(ip))
-          cnameOk = hasMatch
-        }
-      } catch (error) {
-        console.error("A/AAAA fallback lookup failed", error)
-      }
-    }
-  }
+
 
 
   if (!txtOk || !cnameOk) {
