@@ -23,7 +23,6 @@ export default async function Page() {
      order by id desc`,
     [user.id]
   )
-
   const domains = rows.map((row) => ({
     id: row.id as number,
     host: row.host as string,

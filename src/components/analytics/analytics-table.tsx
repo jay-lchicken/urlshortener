@@ -21,6 +21,7 @@ type AnalyticsRow = {
   createdAt: string
   clicks: number
   lastAt: string | null
+    baseUrl: string
 }
 
 function formatValue(value: string | null | undefined) {
@@ -33,7 +34,7 @@ export function AnalyticsTable({ data }: { data: AnalyticsRow[] }) {
       <Table>
         <TableHeader className="bg-muted">
           <TableRow>
-            <TableHead>Tag</TableHead>
+            <TableHead>Shortened URL</TableHead>
             <TableHead>Original URL</TableHead>
             <TableHead>Description</TableHead>
             <TableHead className="text-right">Clicks</TableHead>
@@ -46,7 +47,7 @@ export function AnalyticsTable({ data }: { data: AnalyticsRow[] }) {
             data.map((row) => (
               <TableRow key={row.id}>
                 <TableCell className="font-medium">
-                  <Badge variant="outline">{row.tag}</Badge>
+                  <Badge variant="outline">{row.baseUrl}/{row.tag}</Badge>
                 </TableCell>
                 <TableCell className="max-w-[320px] truncate">
                   <a

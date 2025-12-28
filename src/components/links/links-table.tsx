@@ -41,6 +41,7 @@ type LinkRow = {
   tag: string
   description: string | null
   createdAt: string
+  baseUrl: string
 }
 
 export function LinksTable({ data }: { data: LinkRow[] }) {
@@ -74,7 +75,7 @@ export function LinksTable({ data }: { data: LinkRow[] }) {
       <Table>
         <TableHeader className="bg-muted">
           <TableRow>
-            <TableHead>Tag</TableHead>
+            <TableHead>Shortened URL</TableHead>
             <TableHead>Original URL</TableHead>
             <TableHead>Description</TableHead>
             <TableHead>Created</TableHead>
@@ -86,7 +87,7 @@ export function LinksTable({ data }: { data: LinkRow[] }) {
             data.map((row) => (
               <TableRow key={row.id}>
                 <TableCell className="font-medium">
-                  <Badge variant="outline">{row.tag}</Badge>
+                  <Badge variant="outline">{row.baseUrl}/{row.tag}</Badge>
                 </TableCell>
                 <TableCell className="max-w-[360px] truncate">
                   <a

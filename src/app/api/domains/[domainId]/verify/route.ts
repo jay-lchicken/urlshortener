@@ -119,6 +119,18 @@ export async function POST(_req: Request, context: RouteContext) {
       { status: 500 }
     )
   }
+  try {
+    await pool.query(
+      `insert into domain_user (domain_id, user_id, email) values ($1, $2, $3)`,
+      [domainIdNumber, user.id, user.primaryEmailAddress?.emailAddress ?? null]
+    )
+  } catch (error) {
+    console.error("Failed to add domain to domain_user", error)
+    return NextResponse.json(
+      { error: "Failed to verify domain" },
+      { status: 500 }
+    )
+  }
 
   return NextResponse.json({ verified: true }, { status: 200 })
 }

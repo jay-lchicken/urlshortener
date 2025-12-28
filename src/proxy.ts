@@ -9,6 +9,7 @@ export default clerkMiddleware((auth, req) => {
   const url = req.nextUrl;
   const hostname = url.hostname;
   const isValidHost = authorisedURL.includes(hostname);
+  console.log(hostname)
   const isProtectedPath = PROTECTED_PATHS.some(p => p === '/' ? url.pathname === '/' : url.pathname === p || url.pathname.startsWith(`${p}/`))
   if (!isValidHost && isProtectedPath) {
     return NextResponse.rewrite(new URL('/404', req.url));

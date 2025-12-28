@@ -91,13 +91,20 @@ export function DomainsTable({
                   >
                     Verify
                   </Button>
+                  <Button
+                      className={"ml-2"}
+                    variant="outline"
+                    onClick={() => router.push(`/domains/${row.id}`)}
+                  >
+                    More
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
               <TableCell colSpan={4} className="h-24 text-center">
-                No domains yet.
+                No domains registered by you yet.
               </TableCell>
             </TableRow>
           )}

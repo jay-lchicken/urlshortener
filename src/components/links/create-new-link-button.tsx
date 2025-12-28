@@ -23,41 +23,38 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {useRouter, useSearchParams} from "next/navigation";
-
-export function CreateNewLinkButton() {
+function normalizeHost(input: string): string {
+  const trimmed = input.trim().toLowerCase()
+  const withoutProtocol = trimmed.replace(/^https?:\/\//i, "")
+  return withoutProtocol.split(/[/?#]/)[0].replace(/\/+$/, "")
+}
+export function CreateNewLinkButton({links}: {links?: string[]}) {
   const origin = typeof window !== "undefined" ? window.location.origin : ""
-  const [baseUrl, setBaseUrl] = useState(origin)
+  const [baseUrl, setBaseUrl] = useState(normalizeHost(origin))
   const router = useRouter()
-    const searchParams = useSearchParams()
+  const searchParams = useSearchParams()
 
-  const [open, setOpen] = useState(searchParams.get("log") === "true")
+  const [open, setOpen] = useState(searchParams.get("new") === "true")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  useEffect(() => {
-  if (searchParams.get("new") === "true") {
-    setOpen(true)
-    const newParams = new URLSearchParams(searchParams)
-    newParams.delete("new")
-    router.replace(`${window.location.pathname}?${newParams.toString()}`, { scroll: false })
-  }
-}, [searchParams, router])
+
   useEffect(() => {
     if (searchParams.get("new") === "true") {
       setOpen(true)
+      const newParams = new URLSearchParams(searchParams)
+      newParams.delete("new")
+      router.replace(`${window.location.pathname}?${newParams.toString()}`, { scroll: false })
     }
-  }, [searchParams]);
-
+  }, [searchParams, router])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsSubmitting(true)
-
 
     try {
       const formData = new FormData(e.currentTarget)
       const link = (formData.get("link") as string)?.trim()
       const tag = (formData.get("tag") as string)?.trim()
       const description = (formData.get("description") as string)?.trim()
-      const selectedBaseUrl = (formData.get("baseUrl") as string)?.trim()
 
       if (!link || !tag) {
         toast.error("Please enter a link and a tag.")
@@ -71,7 +68,7 @@ export function CreateNewLinkButton() {
       const res = await fetch("/api/links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ link, tag, description, baseUrl: selectedBaseUrl }),
+        body: JSON.stringify({ link, tag, description, baseUrl }),
       })
 
       if (!res.ok) {
@@ -107,8 +104,6 @@ export function CreateNewLinkButton() {
             </DialogDescription>
           </DialogHeader>
         <form onSubmit={handleSubmit} id={"create-link-form"} >
-          <input type="hidden" name="baseUrl" value={baseUrl} />
-
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="link-1">Original Link</Label>
@@ -126,7 +121,10 @@ export function CreateNewLinkButton() {
                     <SelectValue placeholder="URL" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={origin}>{origin}</SelectItem>
+                    <SelectItem value={normalizeHost(origin)}>{normalizeHost(origin)}</SelectItem>
+                    {links && links.map((link) => (
+                      <SelectItem key={link} value={link}>{link}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <span className="mt-1">/</span>
@@ -141,9 +139,7 @@ export function CreateNewLinkButton() {
                 placeholder="A short description for this link"
               />
             </div>
-                  </div>
-
-
+          </div>
         </form>
         <DialogFooter>
             <DialogClose asChild>
@@ -153,7 +149,6 @@ export function CreateNewLinkButton() {
               Save changes
             </Button>
           </DialogFooter>
-
       </DialogContent>
     </Dialog>
   )

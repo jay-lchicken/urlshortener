@@ -22,7 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Link } from "lucide-react"
+import {GlobeIcon, Link} from "lucide-react"
 
 const data = {
   navMain: [
@@ -35,6 +35,11 @@ const data = {
       title: "Links",
       url: "/links",
       icon: IconListDetails,
+    },
+    {
+      title: "Domains",
+        url: "/domains",
+        icon: GlobeIcon,
     }
   ],
   navSecondary: [

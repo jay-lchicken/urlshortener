@@ -6,17 +6,23 @@ import { getMongoClient } from "@/lib/mongodb"
 type PageProps = {
   params: { tag: string }
 }
-
+function normalizeHost(input: string): string {
+  const trimmed = input.trim().toLowerCase()
+  const withoutProtocol = trimmed.replace(/^https?:\/\//i, "")
+  return withoutProtocol.split(/[/?#]/)[0].replace(/\/+$/, "")
+}
 export default async function Page({ params }: PageProps) {
   const { tag } = await params
   const h = await headers()
   const proto = h.get("x-forwarded-proto") || "http"
   const host = h.get("x-forwarded-host") || h.get("host") || ""
-  const origin = host ? `${proto}://${host}` : ""
+  const origin = normalizeHost(host ? `${proto}://${host}` : "")
   const ip = h.get("x-forwarded-for") || h.get("x-real-ip") || ""
   if (!tag) {
     return notFound()
   }
+  console.log(origin)
+
 
 
 

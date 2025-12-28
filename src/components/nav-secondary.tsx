@@ -10,6 +10,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
+import {SettingsIcon} from "lucide-react";
+import { Card } from "./ui/card";
+import { ModeToggle } from "./theme-mode-toggle";
 
 export function NavSecondary({
   items,
@@ -25,16 +29,31 @@ export function NavSecondary({
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
+          <SidebarMenuItem key={"settings"}>
               <SidebarMenuButton asChild>
-                <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
+                <Sheet>
+                <SheetTrigger asChild>
+                  <SidebarMenuButton>
+                    <SettingsIcon/>
+                    <span>Settings</span>
+                  </SidebarMenuButton>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Settings</SheetTitle>
+                    <SheetDescription>
+                        Manage your settings.
+                    </SheetDescription>
+                    <Card className={"flex flex-row p-4 justify-between items-center"}>
+                      <h1>Theme</h1>
+                        <ModeToggle />
+                    </Card>
+
+                  </SheetHeader>
+                </SheetContent>
+              </Sheet>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
