@@ -9,7 +9,7 @@ export function DomainsToolbar({ cnameTarget }: { cnameTarget: string }) {
         Domains
       </CardTitle>
         <CardDescription className="text-sm text-muted-foreground mr-4">
-Please email us at linxy@techtime.coffee once you have finished setting up your DNS records so that the “no available server” message no longer appears when accessing your website via your custom domain. This verification step helps prevent fraud. Please note that DNS changes may take up to 48 hours to fully propagate and for the updates to be reflected on our side        </CardDescription>
+Please email us at linxy@techtime.coffee once you have finished setting up your DNS records so that the “no available server” message no longer appears when accessing your website via your custom domain. This verification step helps prevent fraud. Please note that DNS changes may take up to 48 hours to fully propagate and for the updates to be reflected on our side. There have been known issues if you are using Cloudflare as a DNS Provider, if you experience so, please contact us at linxy@techtime.coffee.        </CardDescription>
       </div>
       <CreateDomainButton cnameTarget={cnameTarget} />
     </Card>
