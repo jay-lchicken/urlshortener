@@ -58,6 +58,31 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     }
 
     try {
+        console.log(process.env.BASE_URL, baseURL)
+        if (process.env.BASE_URL != baseURL) {
+            const isAuthorised = await pool.query(`
+                select *
+                from domain_user
+                         JOIN domains d on text(d.id) = domain_user.domain_id
+                where d.host = $1
+                  and domain_user.user_id = $2;
+            `, [baseURL.replace(/^https?:\/\//i, ""), user.id]);
+            if (isAuthorised.rowCount === 0) {
+                return NextResponse.json(
+                    {error: "You are not authorised to use this domain."},
+                    {status: 403}
+                )
+            }
+        }
+
+    } catch (error) {
+        console.error("Failed to verify domain authorization", error)
+        return NextResponse.json(
+            {error: "Failed to create link"},
+            {status: 500}
+        )
+    }
+    try {
         const existingTag = await pool.query(
             `select id
              from links
@@ -80,6 +105,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
             {status: 500}
         )
     }
+
 
     try {
 
