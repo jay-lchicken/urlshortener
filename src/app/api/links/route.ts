@@ -66,6 +66,7 @@ export async function POST(req: Request) {
     )
   }
   try{
+    console.log(process.env.BASE_URL, baseURL)
      if (process.env.BASE_URL != baseURL){
        const isAuthorised = await pool.query(`
        select * from domain_user
