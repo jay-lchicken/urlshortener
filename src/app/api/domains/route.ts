@@ -37,8 +37,8 @@ export async function POST(req: Request) {
 
   try {
     const existingHost = await pool.query(
-      `select id from domains where host = $1 and owner_id = $2 limit 1`,
-      [host, user.id]
+      `select id from domains where host = $1 limit 1`,
+      [host]
     )
     if ((existingHost.rowCount ?? 0) > 0) {
       return NextResponse.json(
