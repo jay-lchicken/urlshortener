@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
   let ownerId: string
   try {
     const domainResult = await pool.query(
-      `select owner_id from domains where id = $1 limit 1`,
+      `select owner_id from domains where id = $1 and verified = true limit 1`,
       [domainIdNumber]
     )
     if (!domainResult.rows.length) {
