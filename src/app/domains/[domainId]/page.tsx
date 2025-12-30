@@ -27,7 +27,7 @@ export default async function Page({ params }: PageProps) {
   const domainResult = await pool.query(
     `select id, host, verified, owner_id
      from domains
-     where id = $1
+     where id = $1 and verified = true
      limit 1`,
     [domainIdNumber]
   )
