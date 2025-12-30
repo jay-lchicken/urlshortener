@@ -40,7 +40,7 @@ export async function POST(req: NextRequest, context: RouteContext) {
       [domainIdNumber]
     )
     if (!domainResult.rows.length) {
-      return NextResponse.json({ error: "Domain not found" }, { status: 404 })
+      return NextResponse.json({ error: "Domain not found or verified yet" }, { status: 404 })
     }
     ownerId = domainResult.rows[0].owner_id as string
   } catch (error) {
