@@ -119,15 +119,17 @@ export async function PUT(req: NextRequest, context: RouteContext) {
                and updated.user_id = $5
                  returning updated.id
                  , original.tag as old_tag
-                 , updated.tag as new_tag`,
+                 , updated.tag as new_tag,
+                 original.base_url`,
             [link, tag, description || null, linkIdNumber, user.id]
         )
 
-        invalidateCachedURL(result.rows[0].old_tag)
 
         if (!result.rows.length) {
             return NextResponse.json({error: "Link not found"}, {status: 404})
         }
+        invalidateCachedURL( result.rows[0].base_url,result.rows[0].old_tag)
+
 
         return NextResponse.json({link: result.rows[0]}, {status: 200})
     } catch (error) {
@@ -156,13 +158,13 @@ export async function DELETE(_req: Request, context: RouteContext) {
             `delete
              from links
              where id = $1
-               and user_id = $2 returning id, tag`,
+               and user_id = $2 returning id, tag, base_url`,
             [linkIdNumber, user.id]
         )
-        invalidateCachedURL(result.rows[0].tag)
         if (!result.rows.length) {
             return NextResponse.json({error: "Link not found"}, {status: 404})
         }
+        invalidateCachedURL(result.rows[0].base_url, result.rows[0].tag)
         return NextResponse.json({link: result.rows[0]}, {status: 200})
     } catch (error) {
         console.error("Failed to delete link", error)

@@ -19,21 +19,18 @@ export default async function Page({params}: PageProps) {
     const h = await headers()
     const proto = h.get("x-forwarded-proto") || "http"
     const host = h.get("x-forwarded-host") || h.get("host") || ""
-    const origin = normalizeHost(host ? `${proto}://${host}` : "")
+    const origin = normalizeHost(host ? host : "")
     const ip = h.get("x-forwarded-for") || h.get("x-real-ip") || ""
     if (!tag) {
         return notFound()
     }
-    console.log(origin)
     let originalUrl: string
     let linkId: number
-
-    const cachedOrignalURL = await getCachedURL(tag)
-
-    if (cachedOrignalURL) {
+    const cachedOriginalURL = await getCachedURL(origin, tag)
+    if (cachedOriginalURL) {
         console.log("Cache hit for original URL")
-        originalUrl = cachedOrignalURL.originalUrl
-        linkId = cachedOrignalURL.linkId
+        originalUrl = cachedOriginalURL.originalUrl
+        linkId = cachedOriginalURL.linkId
 
 
     } else {
@@ -54,7 +51,7 @@ export default async function Page({params}: PageProps) {
             originalUrl,
             linkId
         }
-        setCachedURL(tag, linkData)
+        setCachedURL(origin, tag, linkData)
 
 
     }
