@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import {auth, currentUser} from "@clerk/nextjs/server"
 import pool from "@/lib/db"
+import { isPhishingLink } from "@/lib/virustotal"
 
 function isAlphanumeric(str: string): boolean {
   return /^[a-z0-9]+$/i.test(str);
@@ -34,6 +35,8 @@ export async function POST(req: Request) {
   if (!/^https?:\/\//i.test(link)) {
     return NextResponse.json({ error: "Invalid link URL" }, { status: 400 })
   }
+
+
   const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/", "domains"]
   if (!isAlphanumeric(tag)){
     return NextResponse.json(
@@ -87,6 +90,25 @@ where d.host = $1 and domain_user.user_id = $2;
         { error: "Failed to create link" },
         { status: 500 }
     )
+  }
+  try{
+     const host = new URL(link).hostname
+     const phishingResult = await isPhishingLink(host || link)
+     if (phishingResult) {
+       return NextResponse.json(
+         { error: "Link flagged as phishing or malicious." },
+         { status: 400 }
+       )
+     }
+
+
+  }catch (error) {
+    console.error("Failed to verify link safety", error)
+    return NextResponse.json(
+        { error: "Failed to create link" },
+        { status: 500 }
+    )
+
   }
 
   try {

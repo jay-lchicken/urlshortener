@@ -2,6 +2,7 @@ import {NextRequest, NextResponse} from "next/server"
 import {currentUser} from "@clerk/nextjs/server"
 import pool from "@/lib/db"
 import {invalidateCachedURL} from "@/lib/cache";
+import {isPhishingLink} from "@/lib/virustotal";
 
 function isAlphanumeric(str: string): boolean {
     return /^[a-z0-9]+$/i.test(str);
@@ -105,6 +106,26 @@ export async function PUT(req: NextRequest, context: RouteContext) {
             {status: 500}
         )
     }
+    try{
+     const host = new URL(link).hostname
+     const phishingResult = await isPhishingLink(host || link)
+     if (phishingResult) {
+       return NextResponse.json(
+         { error: "Link flagged as phishing or malicious." },
+         { status: 400 }
+       )
+     }
+
+
+  }catch (error) {
+    console.error("Failed to verify link safety", error)
+    return NextResponse.json(
+        { error: "Failed to update link" },
+        { status: 500 }
+    )
+
+  }
+
 
 
     try {

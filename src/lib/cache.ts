@@ -1,17 +1,24 @@
 import redis from './redis';
 import pool from './db';
+import crypto from 'crypto';
 
 const DEFAULT_TTL = 1800; // 30 minutes in seconds
 const HOURS_TTL = 3600; // 1 hour for user hours
 const REQUESTS_TTL = 3600; // 1 hour for user requests
+const SCAN_CACHE_TTL = 172800; // 48 hours for virus scan results
 
 function buildTagKey(baseUrl: string, tag: string) {
-  const normalizedBaseUrl = baseUrl
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//i, "")
-    .replace(/\/+$/, "");
-  return `TAG[${normalizedBaseUrl}/${tag}]`;
+   const normalizedBaseUrl = baseUrl
+     .trim()
+     .toLowerCase()
+     .replace(/^https?:\/\//i, "")
+     .replace(/\/+$/, "");
+   return `TAG[${normalizedBaseUrl}/${tag}]`;
+}
+
+function buildScanKey(url: string) {
+   const digest = crypto.createHash("sha256").update(url).digest("hex")
+   return `VT_SCAN:${digest}`
 }
 
 export async function getCachedURL(baseUrl: string, tag: string) {
@@ -41,10 +48,29 @@ export async function setCachedURL(
 }
 
 export async function invalidateCachedURL(baseUrl: string, tag: string) {
-  console.log("Cache invalidating:", baseUrl, tag);
-  try {
-    await redis.del(buildTagKey(baseUrl, tag));
-  } catch (error) {
-    console.error('Cache invalidate error:', error);
-  }
+   console.log("Cache invalidating:", baseUrl, tag);
+   try {
+     await redis.del(buildTagKey(baseUrl, tag));
+   } catch (error) {
+     console.error('Cache invalidate error:', error);
+   }
+}
+
+export async function getCachedScan(url: string): Promise<boolean | null> {
+   try {
+     const cached = await redis.get(buildScanKey(url));
+     if (cached === "malicious") return true;
+     if (cached === "clean") return false;
+     return null;
+   } catch {
+     return null;
+   }
+}
+
+export async function setCachedScan(url: string, isMalicious: boolean): Promise<void> {
+   try {
+     await redis.set(buildScanKey(url), isMalicious ? "malicious" : "clean", "EX", SCAN_CACHE_TTL);
+   } catch (error) {
+     console.error('Scan cache set error:', error);
+   }
 }
