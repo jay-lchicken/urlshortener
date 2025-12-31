@@ -7,6 +7,7 @@ type LogRow = {
   at: string | null
   ip: string | null
   originalUrl: string | null
+  referrer: string | null
 }
 
 function formatValue(value: string | null | undefined) {
@@ -21,7 +22,9 @@ export function LogsTable({ data }: { data: LogRow[] }) {
           <TableRow>
             <TableHead>IP</TableHead>
             <TableHead>Redirected URL</TableHead>
+            <TableHead>Referrer</TableHead>
             <TableHead>TIme</TableHead>
+
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -32,6 +35,9 @@ export function LogsTable({ data }: { data: LogRow[] }) {
                   <TableCell>{formatValue(row.ip)}</TableCell>
                   <TableCell className="max-w-[280px] truncate" title={row.originalUrl ?? ""}>
                     {formatValue(row.originalUrl)}
+                  </TableCell>
+                  <TableCell className="max-w-[280px] truncate" title={row.referrer ?? "None"}>
+                    {formatValue(row.referrer)}
                   </TableCell>
                   <TableCell>
                     {row.at ? new Date(row.at).toLocaleString() : "—"}

@@ -63,6 +63,7 @@ export default async function Page({ params }: PageProps) {
       _id: doc._id.toString(),
       at,
       ip: toStringValue(doc.ip),
+      referrer: toStringValue((doc as LogDoc)['referer']),
       originalUrl: toStringValue(doc.originalUrl),
     }
   })
