@@ -5,6 +5,9 @@ import { LandingCta } from "@/components/landing-cta"
 import Link from "next/link";
 import { getMongoClient } from "@/lib/mongodb";
 import { getCachedTotalClicks, setCachedTotalClicks } from "@/lib/cache";
+import { TextHoverEffect } from "@/components/ui/text-hover-effect";
+import { ContainerTextFlip } from "@/components/ui/container-text-flip";
+import {TextGenerateEffect} from "@/components/ui/text-generate-effect";
 
 const features = [
   {
@@ -66,8 +69,16 @@ export default async function HomePage() {
               Linxy is now live!
             </Badge>
             <div className="flex flex-col gap-4">
-              <h1 className="text-balance text-4xl font-semibold leading-tight md:text-6xl">
-                Short links that feel handcrafted, not cookie-cutter.
+              <h1 className="text-balance font-semibold leading-tight text-3xl md:text-5xl">
+                Short links that feel
+                <br />
+                <ContainerTextFlip
+                  words={["handcrafted", "branded", "premium"]}
+                  interval={2500}
+                  animationDuration={700}
+                  textClassName="text-primary"
+                />
+                {", not cookie-cutter."}
               </h1>
               <p className="max-w-2xl text-pretty text-base text-muted-foreground md:text-lg">
                 Linxy keeps your brand in front of every click. Create beautiful
@@ -104,7 +115,7 @@ export default async function HomePage() {
                 Built for teams
               </p>
               <h2 className="text-2xl font-semibold">
-                Everything you need to ship confident links.
+                <TextGenerateEffect words={"Everything you need to ship confident links."}/>
               </h2>
               <p className="text-sm text-muted-foreground">
                 From custom domains to click-level insights, Linxy keeps every
