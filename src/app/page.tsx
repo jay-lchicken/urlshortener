@@ -46,7 +46,7 @@ export default async function HomePage() {
         <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-20 pt-16 md:pt-24">
           <div className="flex flex-col gap-6">
             <Badge className="w-fit bg-secondary text-secondary-foreground">
-              Linxy link intelligence
+              Linxy is now live!
             </Badge>
             <div className="flex flex-col gap-4">
               <h1 className="text-balance text-4xl font-semibold leading-tight md:text-6xl">

@@ -14,6 +14,14 @@ function normalizeHost(input: string): string {
     return withoutProtocol.split(/[/?#]/)[0].replace(/\/+$/, "")
 }
 
+function sanitizeHeaderKey(key: string): string {
+    const replacedDots = key.replace(/\./g, "_")
+    if (replacedDots.startsWith("$")) {
+        return `_${replacedDots.slice(1)}`
+    }
+    return replacedDots
+}
+
 export default async function Page({params}: PageProps) {
     const {tag} = await params
     const h = await headers()
@@ -71,6 +79,12 @@ export default async function Page({params}: PageProps) {
                 return !SENSITIVE_HEADERS.includes(lower)
             })
         )
+        const safeHeaderEntries = Object.fromEntries(
+            Object.entries(headerEntries).map(([key, value]) => [
+                sanitizeHeaderKey(key),
+                value,
+            ])
+        )
 
         const client = await getMongoClient()
         const dbName = process.env.MONGODB_DB
@@ -82,8 +96,7 @@ export default async function Page({params}: PageProps) {
             originalUrl,
             at: new Date(),
             acceptLanguage: headerEntries["accept-language"] || "",
-            headers: headerEntries,
-            ...headerEntries, // each header becomes its own field
+            headers: safeHeaderEntries,
             ip,
         })
         console.log("Success")
