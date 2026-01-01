@@ -65,28 +65,41 @@ export default async function Page({params}: PageProps) {
 
     }
 
+    const SENSITIVE_HEADERS = [
+        "cookie",
+        "authorization",
+        "x-clerk-auth-token",
+        "x-clerk-auth-signature",
+    ]
 
+    const headerEntries = Object.fromEntries(
+        Array.from(h.entries()).filter(([key]) => {
+            const lower = key.toLowerCase()
+            return !SENSITIVE_HEADERS.includes(lower)
+        })
+    )
+
+    logRedirect(linkId, tag, origin, originalUrl, headerEntries, referer, ip)
+        .catch(err => console.error("Failed to log redirect", err))
+
+    redirect(originalUrl)
+}
+async function logRedirect(
+    linkId: number,
+    tag: string,
+    origin: string,
+    originalUrl: string,
+    headerEntries: Record<string, string>,
+    referer: string,
+    ip: string,
+) {
     try {
-        const SENSITIVE_HEADERS = [
-            "cookie",
-            "authorization",
-            "x-clerk-auth-token",
-            "x-clerk-auth-signature",
-        ]
-
-        const headerEntries = Object.fromEntries(
-            Array.from(h.entries()).filter(([key]) => {
-                const lower = key.toLowerCase()
-                return !SENSITIVE_HEADERS.includes(lower)
-            })
-        )
         const safeHeaderEntries = Object.fromEntries(
             Object.entries(headerEntries).map(([key, value]) => [
                 sanitizeHeaderKey(key),
                 value,
             ])
         )
-
         const client = await getMongoClient()
         const dbName = process.env.MONGODB_DB
         const db = dbName ? client.db(dbName) : client.db()
@@ -106,6 +119,4 @@ export default async function Page({params}: PageProps) {
     } catch (error) {
         console.error("Failed to log redirect", error)
     }
-
-    redirect(originalUrl)
 }
