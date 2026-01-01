@@ -28,7 +28,7 @@ export default async function Page({params}: PageProps) {
     const proto = h.get("x-forwarded-proto") || "http"
     const host = h.get("x-forwarded-host") || h.get("host") || ""
     const origin = normalizeHost(host ? host : "")
-    const ip = h.get("x-forwarded-for") || h.get("x-real-ip") || ""
+    const ip = h.get("cf-connecting-ip") || h.get("x-forwarded-for") || h.get("x-real-ip") || ""
     const referer = h.get("referer") || h.get("referrer") || ""
     if (!tag) {
         return notFound()
