@@ -98,6 +98,7 @@ export default async function Page({params}: PageProps) {
             acceptLanguage: headerEntries["accept-language"] || "",
             headers: safeHeaderEntries,
             ip,
+            ...safeHeaderEntries
         })
         console.log("Success")
     } catch (error) {
