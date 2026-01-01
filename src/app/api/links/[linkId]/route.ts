@@ -40,6 +40,25 @@ export async function PUT(req: NextRequest, context: RouteContext) {
             {status: 400}
         )
     }
+    try{
+        //check ownership of link
+        const linkOwnership = await pool.query(
+            `select id from links where id = $1 and user_id = $2 limit 1`,
+            [linkIdNumber, user.id]
+        )
+        if (linkOwnership.rowCount === 0) {
+            return NextResponse.json(
+                {error: "Link not found"},
+                {status: 404}
+            )
+        }
+    }catch (error) {
+        console.error("Failed to verify link ownership", error)
+        return NextResponse.json(
+            {error: "Failed to update link"},
+            {status: 500}
+        )
+    }
     const reservedTags = ["admin", "login", "signup", "api", "links", "dashboard", "settings", "account", "help", "documentation", "robots.txt", "/", "domains"]
     if (!isAlphanumeric(tag)) {
         return NextResponse.json(
