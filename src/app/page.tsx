@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { LandingCta } from "@/components/landing-cta"
 import Link from "next/link";
+import { getMongoClient } from "@/lib/mongodb";
+import { getCachedTotalClicks, setCachedTotalClicks } from "@/lib/cache";
 
 const features = [
   {
@@ -36,6 +38,21 @@ const steps = [
 
 export default async function HomePage() {
   const { userId } = await auth()
+  let totalClicks = await getCachedTotalClicks()
+  if (totalClicks === null) {
+    console.log("CACHE MISS: totalClicks")
+    try {
+      const client = await getMongoClient()
+      const dbName = process.env.MONGODB_DB
+      const db = dbName ? client.db(dbName) : client.db()
+      totalClicks = await db.collection("redirect_logs").countDocuments()
+      await setCachedTotalClicks(totalClicks)
+    } catch {
+      totalClicks = 0
+    }
+  }else {
+    console.log("CACHE HIT: totalClicks")
+  }
 
   return (
     <main className="min-h-svh bg-background text-foreground">
@@ -73,6 +90,10 @@ export default async function HomePage() {
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-primary" />
                 GDPR-friendly analytics
+              </div>
+              <div className="flex items-center gap-2 font-medium text-foreground">
+                <span className="h-2 w-2 rounded-full bg-primary" />
+                {totalClicks.toLocaleString()} clicks served
               </div>
             </div>
           </div>
