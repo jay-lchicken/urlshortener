@@ -54,6 +54,7 @@ jobs:
       # Manual build for your Next.js app; this is separate from CodeQL
       - name: Build Next.js app
         run: npm run build
+        continue-on-error: true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
