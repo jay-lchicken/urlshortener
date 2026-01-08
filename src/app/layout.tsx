@@ -25,10 +25,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let allowedOrigins = ["http://localhost:3000"];
+  if (process.env.NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS) {
+    try {
+      allowedOrigins = JSON.parse(process.env.NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS);
+    } catch {
+      console.warn("Failed to parse NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS, using default");
+    }
+  }
+
   return (
-        <ClerkProvider allowedRedirectOrigins={process.env.NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS
-  ? JSON.parse(process.env.NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS)
-  : ["http://localhost:3000"]} >
+        <ClerkProvider allowedRedirectOrigins={allowedOrigins} >
         <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
