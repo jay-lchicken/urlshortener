@@ -26,7 +26,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-        <ClerkProvider>
+        <ClerkProvider allowedRedirectOrigins={process.env.NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS
+  ? JSON.parse(process.env.NEXT_PUBLIC_CLERK_ALLOWED_REDIRECT_ORIGINS)
+  : ["http://localhost:3000"]} >
         <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
