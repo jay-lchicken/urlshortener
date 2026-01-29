@@ -94,7 +94,7 @@ where d.host = $1 and domain_user.user_id = $2;
   try{
      const host = new URL(link).hostname
      const phishingResult = await isPhishingLink(host || link)
-     if (phishingResult && (host != "docs.google.com")) {
+     if (phishingResult && (!host.endsWith("google.com"))) {
        return NextResponse.json(
          { error: "Link flagged as phishing or malicious." },
          { status: 400 }
