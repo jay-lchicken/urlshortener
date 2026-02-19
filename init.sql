@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS links (
     tag          TEXT         NOT NULL,
     description  TEXT,
     base_url     TEXT         NOT NULL,
-    created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at   TIMESTAMPZ    NOT NULL DEFAULT NOW()
 );
 
 -- =============================================================
