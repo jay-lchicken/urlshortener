@@ -42,6 +42,7 @@ type LinkRow = {
   description: string | null
   createdAt: string
   baseUrl: string
+  suspense: boolean
 }
 
 export function LinksTable({ data }: { data: LinkRow[] }) {
@@ -78,6 +79,7 @@ export function LinksTable({ data }: { data: LinkRow[] }) {
             <TableHead>Shortened URL</TableHead>
             <TableHead>Original URL</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Suspense</TableHead>
             <TableHead>Created</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -101,6 +103,9 @@ export function LinksTable({ data }: { data: LinkRow[] }) {
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {row.description || "—"}
+                </TableCell>
+                <TableCell className={"text-muted-foreground"}>
+                  {row.suspense ? "Enabled":"Disabled"}
                 </TableCell>
                 <TableCell className=" text-muted-foreground">
                   {row.createdAt

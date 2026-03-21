@@ -21,7 +21,7 @@ export default async function Page() {
   }
 
   const { rows } = await pool.query(
-    `select id, original_url, tag, description, created_at, base_url
+    `select id, original_url, tag, description, created_at, base_url, suspense
      from links
      where user_id = $1
      order by created_at desc`,
@@ -35,6 +35,7 @@ export default async function Page() {
     description: row.description as string | null,
     createdAt: row.created_at as string,
     baseUrl: row.base_url as string,
+    suspense: row.suspense as string,
   }))
   return (
     <SidebarProvider>
