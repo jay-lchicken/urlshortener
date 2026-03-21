@@ -35,7 +35,7 @@ export default async function Page() {
     description: row.description as string | null,
     createdAt: row.created_at as string,
     baseUrl: row.base_url as string,
-    suspense: row.suspense as string,
+    suspense: row.suspense as boolean,
   }))
   return (
     <SidebarProvider>
