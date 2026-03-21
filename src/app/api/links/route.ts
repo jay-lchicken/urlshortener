@@ -13,7 +13,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  let body: { link?: string; tag?: string; description?: string, baseUrl?: string }
+  let body: {
+    link?: string
+    tag?: string
+    description?: string
+    baseUrl?: string
+    suspense?: boolean
+  }
   try {
     body = await req.json()
   } catch {
@@ -24,6 +30,7 @@ export async function POST(req: Request) {
   const tag = (body.tag ?? "").trim()
   const description = (body.description ?? "").trim()
   const baseURL = (body.baseUrl ?? "").trim()
+  const suspense = body.suspense === true
 
   if (!link || !tag || !baseURL) {
     return NextResponse.json(
@@ -113,10 +120,10 @@ where d.host = $1 and domain_user.user_id = $2;
 
   try {
     const result = await pool.query(
-      `insert into links (user_id, original_url, tag, description, base_url)
-       values ($1, $2, $3, $4, $5)
+      `insert into links (user_id, original_url, tag, description, base_url, suspense)
+       values ($1, $2, $3, $4, $5, $6)
        returning id, user_id, original_url, tag, description, created_at`,
-      [user.id, link, tag, description || null, baseURL]
+      [user.id, link, tag, description || null, baseURL, suspense]
     )
 
     return NextResponse.json({ link: result.rows[0] }, { status: 201 })

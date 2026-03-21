@@ -22,7 +22,13 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     if (!Number.isFinite(linkIdNumber)) {
         return NextResponse.json({error: "Invalid link id"}, {status: 400})
     }
-    let body: { link?: string; tag?: string; description?: string; baseUrl?: string }
+    let body: {
+        link?: string
+        tag?: string
+        description?: string
+        baseUrl?: string
+        suspense?: boolean
+    }
     try {
         body = await req.json()
     } catch {
@@ -33,6 +39,7 @@ export async function PUT(req: NextRequest, context: RouteContext) {
     const tag = (body.tag ?? "").trim()
     const description = (body.description ?? "").trim()
     const baseURL = (body.baseUrl ?? "").trim()
+    const suspense = body.suspense === true
 
     if (!link || !tag || !baseURL) {
         return NextResponse.json(
@@ -153,15 +160,17 @@ export async function PUT(req: NextRequest, context: RouteContext) {
             `update links as updated
              set original_url = $1,
                  tag          = $2,
-                 description  = $3 from links as original
+                 description  = $3,
+                 suspense     = $4
+                 from links as original
              where updated.id = original.id
-               and updated.id = $4
-               and updated.user_id = $5
+               and updated.id = $5
+               and updated.user_id = $6
                  returning updated.id
                  , original.tag as old_tag
                  , updated.tag as new_tag,
                  original.base_url`,
-            [link, tag, description || null, linkIdNumber, user.id]
+            [link, tag, description || null, suspense, linkIdNumber, user.id]
         )
 
 

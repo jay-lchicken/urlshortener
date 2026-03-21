@@ -38,6 +38,7 @@ export function CreateNewLinkButton({links}: {links?: string[]}) {
 
   const [open, setOpen] = useState(searchParams.get("new") === "true")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [suspenseEnabled, setSuspenseEnabled] = useState(false)
 
   useEffect(() => {
     if (searchParams.get("new") === "true") {
@@ -70,7 +71,13 @@ export function CreateNewLinkButton({links}: {links?: string[]}) {
       const res = await fetch("/api/links", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ link, tag, description, baseUrl }),
+        body: JSON.stringify({
+          link,
+          tag,
+          description,
+          baseUrl,
+          suspense: suspenseEnabled,
+        }),
       })
 
       if (!res.ok) {
@@ -82,6 +89,7 @@ export function CreateNewLinkButton({links}: {links?: string[]}) {
 
       toast.success("Link created.")
       setOpen(false)
+      setSuspenseEnabled(false)
     } catch (error) {
       console.error("Failed to submit link", error)
       toast.error("Failed to create link.")
@@ -143,11 +151,20 @@ export function CreateNewLinkButton({links}: {links?: string[]}) {
               </div>
               <FieldLabel>
                 <Field orientation="horizontal">
-                  <Checkbox id="toggle-checkbox-2" name="toggle-checkbox-2" />
+                  <Checkbox
+                    id="suspense"
+                    name="suspense"
+                    checked={suspenseEnabled}
+                    onCheckedChange={(value) =>
+                      setSuspenseEnabled(value === true)
+                    }
+                  />
                   <FieldContent>
                     <FieldTitle>Enable Suspense</FieldTitle>
                     <FieldDescription>
-                      Users can preview the destination URL and will be automatically redirected after 5 seconds.                    </FieldDescription>
+                      Users can preview the destination URL and will be
+                      automatically redirected after 5 seconds.
+                    </FieldDescription>
                   </FieldContent>
                 </Field>
               </FieldLabel>

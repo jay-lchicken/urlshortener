@@ -7,6 +7,14 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from "@/components/ui/field"
+import { Checkbox } from "@/components/ui/checkbox"
 
 type EditLinkFormProps = {
   linkId: number
@@ -14,6 +22,7 @@ type EditLinkFormProps = {
   tag: string
   description: string | null
   baseUrl: string
+  suspense: boolean
 }
 
 export function EditLinkForm({
@@ -22,12 +31,14 @@ export function EditLinkForm({
   tag,
   description,
   baseUrl,
+  suspense,
 }: EditLinkFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [linkValue, setLinkValue] = useState(originalUrl)
   const [tagValue, setTagValue] = useState(tag)
   const [descriptionValue, setDescriptionValue] = useState(description ?? "")
+  const [suspenseEnabled, setSuspenseEnabled] = useState(suspense)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -57,6 +68,7 @@ export function EditLinkForm({
           tag: trimmedTag,
           description: trimmedDescription,
           baseUrl,
+          suspense: suspenseEnabled,
         }),
       })
 
@@ -109,6 +121,23 @@ export function EditLinkForm({
           placeholder="A short description for this link"
         />
       </div>
+      <FieldLabel>
+        <Field orientation="horizontal">
+          <Checkbox
+            id="edit-suspense"
+            name="suspense"
+            checked={suspenseEnabled}
+            onCheckedChange={(value) => setSuspenseEnabled(value === true)}
+          />
+          <FieldContent>
+            <FieldTitle>Enable Suspense</FieldTitle>
+            <FieldDescription>
+              Users can preview the destination URL and will be automatically
+              redirected after 5 seconds.
+            </FieldDescription>
+          </FieldContent>
+        </Field>
+      </FieldLabel>
       <div className="flex flex-wrap items-center gap-3">
         <Button type="submit" loading={isSubmitting} disabled={isSubmitting}>
           Save changes

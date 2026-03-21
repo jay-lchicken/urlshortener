@@ -24,7 +24,7 @@ export default async function Page({ params }: PageProps) {
   }
 
   const { rows } = await pool.query(
-    `select id, original_url, tag, description, base_url
+    `select id, original_url, tag, description, base_url, suspense
      from links
      where id = $1 and user_id = $2
      limit 1`,
@@ -57,6 +57,7 @@ export default async function Page({ params }: PageProps) {
                     tag={link.tag as string}
                     description={link.description as string | null}
                     baseUrl={link.base_url as string}
+                    suspense={link.suspense as boolean}
                   />
                 </CardContent>
               </Card>
