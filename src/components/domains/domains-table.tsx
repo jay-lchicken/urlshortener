@@ -52,9 +52,9 @@ export function DomainsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border">
+    <div className="overflow-hidden rounded-2xl border border-border bg-background">
       <Table>
-        <TableHeader className="bg-muted">
+        <TableHeader className="bg-muted/70">
           <TableRow>
             <TableHead>Domain</TableHead>
             <TableHead>Verification</TableHead>

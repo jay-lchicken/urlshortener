@@ -1,9 +1,24 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 
 function normalizeHost(host: string): string {
   const trimmed = host.trim().toLowerCase();
   return trimmed.split(':')[0];
+}
+
+function getBaseHost(): string | null {
+  const raw = process.env.BASE_URL?.trim();
+  if (!raw) {
+    return null;
+  }
+  try {
+    if (raw.includes("://")) {
+      return normalizeHost(new URL(raw).host);
+    }
+  } catch {
+
+  }
+  return normalizeHost(raw);
 }
 
 function isValidHost(hostname: string, authorisedURLs: string[]): boolean {
@@ -36,7 +51,7 @@ const PROTECTED_PATHS = [
   "/domains",
 ];
 
-export default clerkMiddleware((auth, req) => {
+function coreHandler(req: NextRequest) {
   const url = req.nextUrl;
   const hostHeader = req.headers.get("host") || "";
 
@@ -49,7 +64,8 @@ export default clerkMiddleware((auth, req) => {
     return NextResponse.rewrite(new URL("/404", req.url));
   }
 
-  const authorisedURL = ["localhost", process.env.BASE_URL].filter(Boolean) as string[];
+  const baseHost = getBaseHost();
+  const authorisedURL = ["localhost", baseHost].filter(Boolean) as string[];
   const isValidHostResult = isValidHost(hostHeader, authorisedURL);
 
   const isProtectedPath = PROTECTED_PATHS.some((p) =>
@@ -63,4 +79,21 @@ export default clerkMiddleware((auth, req) => {
   }
 
   return NextResponse.next();
-});
+}
+
+const clerkHandler = clerkMiddleware((auth, req) => coreHandler(req));
+
+export default function middleware(req: NextRequest, evt: NextFetchEvent) {
+  const hostHeader = req.headers.get("host") || "";
+  const normalizedHost = normalizeHost(hostHeader);
+  const baseHost = getBaseHost();
+  const shouldInitClerk = baseHost
+    ? normalizedHost === baseHost || normalizedHost === "localhost"
+    : normalizedHost === "localhost";
+
+  if (!shouldInitClerk) {
+    return coreHandler(req);
+  }
+
+  return clerkHandler(req, evt);
+}

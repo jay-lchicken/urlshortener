@@ -6,6 +6,13 @@ import { SiteHeader } from "@/components/site-header"
 import { LinksToolbar } from "@/components/links/links-toolbar"
 import { LinksTable } from "@/components/links/links-table"
 import pool from "@/lib/db"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default async function Page() {
   const user = await currentUser()
@@ -36,9 +43,19 @@ export default async function Page() {
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4">
-              <LinksToolbar />
-              <LinksTable data={links} />
+            <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:py-6">
+              <LinksToolbar totalLinks={links.length} />
+              <Card>
+                <CardHeader className="border-b border-border">
+                  <CardTitle>Live Links</CardTitle>
+                  <CardDescription>
+                    All of your branded links, newest to oldest.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <LinksTable data={links} />
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

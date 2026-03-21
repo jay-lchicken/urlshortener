@@ -3,11 +3,20 @@ import { currentUser } from "@clerk/nextjs/server"
 import { notFound } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { AnalyticsTable } from "@/components/analytics/analytics-table"
 import { ClicksChart } from "@/components/analytics/clicks-chart"
 import { getMongoClient } from "@/lib/mongodb"
 import pool from "@/lib/db"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 
 type AnalyticsStat = {
   id: number
@@ -170,6 +179,15 @@ export default async function Page() {
   })
 
   const totalClicks = analyticsRows.reduce((acc, row) => acc + row.clicks, 0)
+  const totalLinks = analyticsRows.length
+  const avgClicksPerLink = totalLinks ? Math.round(totalClicks / totalLinks) : 0
+  const last7Clicks = clickSeries.reduce((acc, item) => acc + item.clicks, 0)
+  const bestDay =
+    clickSeries.length > 0
+      ? clickSeries.reduce((best, item) =>
+          item.clicks > best.clicks ? item : best
+        )
+      : null
 
   return (
     <SidebarProvider>
@@ -178,21 +196,58 @@ export default async function Page() {
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Card>
-                  <CardHeader>
+            <div className="flex flex-col gap-4 px-4 py-4 md:gap-6 md:py-6">
+              <div className="flex flex-col gap-4 rounded-3xl border border-border bg-card/70 p-6">
+                <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                  <div className="flex flex-col gap-2">
+                    <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                      Dashboard
+                    </p>
+                    <h1 className="text-3xl font-semibold">
+                      Welcome back{user.firstName ? `, ${user.firstName}` : ""}.
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      Here is the pulse on your links this week.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <Button asChild>
+                      <Link href="/links">Create link</Link>
+                    </Button>
+                    <Button variant="outline" asChild>
+                      <Link href="/domains">Manage domains</Link>
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge className="bg-secondary text-secondary-foreground">
+                    Live clicks
+                  </Badge>
+                  <Badge variant="outline">Last 7 days</Badge>
+                  <Badge variant="outline">
+                    Best day: {bestDay ? bestDay.date : "—"}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <Card className="relative overflow-hidden">
+                  <div className="absolute -right-10 top-8 h-24 w-24 rounded-full bg-primary/20 blur-2xl" />
+                  <CardHeader className="pb-0">
                     <CardTitle>Total Links</CardTitle>
+                    <CardDescription>Active short links</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-semibold tabular-nums">
-                      {analyticsRows.length}
+                      {totalLinks}
                     </div>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardHeader>
+                <Card className="relative overflow-hidden">
+                  <div className="absolute -right-10 top-8 h-24 w-24 rounded-full bg-accent/25 blur-2xl" />
+                  <CardHeader className="pb-0">
                     <CardTitle>Total Clicks</CardTitle>
+                    <CardDescription>All-time traffic</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-semibold tabular-nums">
@@ -200,9 +255,55 @@ export default async function Page() {
                     </div>
                   </CardContent>
                 </Card>
+                <Card className="relative overflow-hidden">
+                  <div className="absolute -right-10 top-8 h-24 w-24 rounded-full bg-primary/15 blur-2xl" />
+                  <CardHeader className="pb-0">
+                    <CardTitle>Last 7 Days</CardTitle>
+                    <CardDescription>Fresh engagement</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-semibold tabular-nums">
+                      {last7Clicks}
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="relative overflow-hidden">
+                  <div className="absolute -right-10 top-8 h-24 w-24 rounded-full bg-secondary/60 blur-2xl" />
+                  <CardHeader className="pb-0">
+                    <CardTitle>Avg per Link</CardTitle>
+                    <CardDescription>Clicks per link</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-semibold tabular-nums">
+                      {avgClicksPerLink}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
-              <ClicksChart data={clickSeries} />
-              <AnalyticsTable data={analyticsRows} />
+
+              <Card className="overflow-hidden">
+                <CardHeader className="border-b border-border">
+                  <CardTitle>Weekly Momentum</CardTitle>
+                  <CardDescription>
+                    Track clicks day-by-day and spot spikes fast.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <ClicksChart data={clickSeries} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="border-b border-border">
+                  <CardTitle>Live Links</CardTitle>
+                  <CardDescription>
+                    Review every destination and see what is trending.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <AnalyticsTable data={analyticsRows} />
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
