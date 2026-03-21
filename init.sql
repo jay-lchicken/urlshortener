@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS links (
     description  TEXT,
     base_url     TEXT         NOT NULL,
     created_at   TIMESTAMPZ    NOT NULL DEFAULT NOW(),
-    suspense     BOOLEAN      NOT NULL DEFAULT FALSE,
+    suspense     BOOLEAN      NOT NULL DEFAULT TRUE,
 );
 
 -- =============================================================
