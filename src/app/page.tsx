@@ -63,7 +63,7 @@ export default async function HomePage() {
         <div className="absolute -left-24 top-8 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />
         <div className="absolute right-6 top-32 h-72 w-72 rounded-full bg-accent/25 blur-3xl" />
         <div className="relative mx-auto w-full max-w-6xl px-6 pb-20 pt-16 md:pt-24">
-          <div className="grid gap-10 md:grid-cols-[1.15fr_0.85fr] md:items-center">
+          <div className="grid gap-10 md:items-center">
             <div className="flex flex-col gap-6">
               <Badge className="w-fit bg-secondary text-secondary-foreground">
                 Linxy is now live!
@@ -112,54 +112,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 rounded-3xl border border-border bg-card/70 p-6 shadow-sm">
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-                  Live link preview
-                </p>
-                <Badge className="bg-secondary text-secondary-foreground">
-                  Active
-                </Badge>
-              </div>
-              <div className="rounded-2xl border border-border bg-background px-4 py-4">
-                <p className="text-xs font-medium uppercase text-muted-foreground">
-                  Destination
-                </p>
-                <p className="text-sm font-medium text-foreground">
-                  https://yourbrand.com/summer-collection
-                </p>
-              </div>
-              <div className="flex items-center justify-between rounded-2xl border border-border bg-background px-4 py-4">
-                <div className="flex flex-col">
-                  <p className="text-xs font-medium uppercase text-muted-foreground">
-                    Short link
-                  </p>
-                  <p className="text-sm font-semibold text-foreground">
-                    linxy.io/launch
-                  </p>
-                </div>
-                <Button size="sm" variant="secondary">
-                  Copy
-                </Button>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-background px-4 py-3">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    24h clicks
-                  </p>
-                  <p className="text-lg font-semibold text-foreground">3,281</p>
-                </div>
-                <div className="rounded-2xl border border-border bg-background px-4 py-3">
-                  <p className="text-xs uppercase text-muted-foreground">
-                    Top referrer
-                  </p>
-                  <p className="text-sm font-semibold text-foreground">Product Hunt</p>
-                </div>
-              </div>
-              <div className="rounded-2xl border border-border bg-secondary/50 px-4 py-3 text-sm text-muted-foreground">
-                Real-time tracking, brand-safe previews, and UTM-aware exports.
-              </div>
-            </div>
+
           </div>
         </div>
       </section>
