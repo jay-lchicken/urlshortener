@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS links (
     tag          TEXT         NOT NULL,
     description  TEXT,
     base_url     TEXT         NOT NULL,
-    created_at   TIMESTAMPZ    NOT NULL DEFAULT NOW()
+    created_at   TIMESTAMPZ    NOT NULL DEFAULT NOW(),
+    suspense     BOOLEAN      NOT NULL DEFAULT FALSE,
 );
 
 -- =============================================================

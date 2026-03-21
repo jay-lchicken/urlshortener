@@ -3,6 +3,7 @@ import pool from "@/lib/db"
 import {headers} from "next/headers"
 import {getMongoClient} from "@/lib/mongodb"
 import {getCachedURL, setCachedURL} from "@/lib/cache";
+import {SuspenseRedirect} from "@/components/suspense-redirect";
 
 type PageProps = {
     params: { tag: string }
@@ -34,18 +35,20 @@ export default async function Page({params}: PageProps) {
         return notFound()
     }
     let originalUrl: string
+    let suspense: boolean
     let linkId: number
     const cachedOriginalURL = await getCachedURL(origin, tag)
     if (cachedOriginalURL) {
         console.log("Cache hit for original URL")
         originalUrl = cachedOriginalURL.originalUrl
         linkId = cachedOriginalURL.linkId
+        suspense = cachedOriginalURL.suspense
 
 
     } else {
         console.log("Cache miss for original URL, querying database")
         const {rows} = await pool.query(
-            `select original_url, id
+            `select original_url, id, suspense
              from links
              where tag = $1
                and base_url = $2 limit 1`,
@@ -56,9 +59,11 @@ export default async function Page({params}: PageProps) {
         }
         linkId = rows[0].id as number
         originalUrl = rows[0].original_url as string
+        suspense = rows[0].suspense as boolean
         const linkData = {
             originalUrl,
-            linkId
+            linkId,
+            suspense
         }
         setCachedURL(origin, tag, linkData)
 
@@ -81,8 +86,14 @@ export default async function Page({params}: PageProps) {
 
     logRedirect(linkId, tag, origin, originalUrl, headerEntries, referer, ip)
         .catch(err => console.error("Failed to log redirect", err))
+    if (suspense){
+        return <SuspenseRedirect destination={originalUrl} time={5}/>
 
-    redirect(originalUrl)
+    }else{
+            redirect(originalUrl)
+
+    }
+
 }
 async function logRedirect(
     linkId: number,

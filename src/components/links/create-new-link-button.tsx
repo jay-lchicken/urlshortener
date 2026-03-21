@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {useRouter, useSearchParams} from "next/navigation";
+import {Field, FieldContent, FieldDescription, FieldLabel, FieldTitle} from "@/components/ui/field";
+import {Checkbox} from "@/components/ui/checkbox";
 function normalizeHost(input: string): string {
   const trimmed = input.trim().toLowerCase()
   const withoutProtocol = trimmed.replace(/^https?:\/\//i, "")
@@ -89,59 +91,69 @@ export function CreateNewLinkButton({links}: {links?: string[]}) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus />
-          Create New Link
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline">
+            <Plus />
+            Create New Link
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
             <DialogTitle>New Link</DialogTitle>
             <DialogDescription>
               Enter the link details below to create a new shortened link.
             </DialogDescription>
           </DialogHeader>
-        <form onSubmit={handleSubmit} id={"create-link-form"} >
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label htmlFor="link-1">Original Link</Label>
-              <Input
-                id="link-1"
-                name="link"
-                placeholder="https://helloworldexample.com"
-              />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="tag-1">URL Tag</Label>
-              <div className="flex flex-row gap-2">
-                <Select value={baseUrl} onValueChange={setBaseUrl}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="URL" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={normalizeHost(origin)}>{normalizeHost(origin)}</SelectItem>
-                    {links && links.map((link) => (
-                      <SelectItem key={link} value={link}>{link}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <span className="mt-1">/</span>
-                <Input id="tag-1" name="tag" placeholder="example" />
+          <form onSubmit={handleSubmit} id={"create-link-form"} >
+            <div className="grid gap-4">
+              <div className="grid gap-3">
+                <Label htmlFor="link-1">Original Link</Label>
+                <Input
+                    id="link-1"
+                    name="link"
+                    placeholder="https://helloworldexample.com"
+                />
               </div>
+              <div className="grid gap-3">
+                <Label htmlFor="tag-1">URL Tag</Label>
+                <div className="flex flex-row gap-2">
+                  <Select value={baseUrl} onValueChange={setBaseUrl}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="URL" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={normalizeHost(origin)}>{normalizeHost(origin)}</SelectItem>
+                      {links && links.map((link) => (
+                          <SelectItem key={link} value={link}>{link}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span className="mt-1">/</span>
+                  <Input id="tag-1" name="tag" placeholder="example" />
+                </div>
+              </div>
+              <div className="grid gap-3">
+                <Label htmlFor="description-1">Description (optional)</Label>
+                <Input
+                    id="description-1"
+                    name="description"
+                    placeholder="A short description for this link"
+                />
+              </div>
+              <FieldLabel>
+                <Field orientation="horizontal">
+                  <Checkbox id="toggle-checkbox-2" name="toggle-checkbox-2" />
+                  <FieldContent>
+                    <FieldTitle>Enable Suspense</FieldTitle>
+                    <FieldDescription>
+                      Users can preview the destination URL and will be automatically redirected after 5 seconds.                    </FieldDescription>
+                  </FieldContent>
+                </Field>
+              </FieldLabel>
             </div>
-            <div className="grid gap-3">
-              <Label htmlFor="description-1">Description (optional)</Label>
-              <Input
-                id="description-1"
-                name="description"
-                placeholder="A short description for this link"
-              />
-            </div>
-          </div>
-        </form>
-        <DialogFooter>
+          </form>
+          <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
@@ -149,7 +161,7 @@ export function CreateNewLinkButton({links}: {links?: string[]}) {
               Save changes
             </Button>
           </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
   )
 }
